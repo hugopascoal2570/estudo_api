@@ -12,22 +12,22 @@ services:
         working_dir: /var/www/
         volumes:
             - ./:/var/www
-        depends_on: 
+        depends_on:
             - redis
-        networks: 
+        networks:
             - api
-    
+
     # nginx
     nginx:
         container_name: estudo_api_nginx
         image: nginx:alpine
         restart: unless-stopped
-        ports: 
+        ports:
             - "8004:80"
-        volumes: 
+        volumes:
             - ./:/var/www
             - ./docker/nginx/:/etc/nginx/conf.d/
-        networks: 
+        networks:
             - api
 
     # db mysql
@@ -35,16 +35,16 @@ services:
         container_name: estudo_api_mysql
         image: mysql:5.7.22
         restart: unless-stopped
-        environment: 
+        environment:
             MYSQL_DATABASE: ${DB_DATABASE}
             MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
             MYSQL_PASSWORD: ${DB_PASSWORD}
             MYSQL_USER: ${DB_USERNAME}
-        volumes: 
+        volumes:
             - ./.docker/mysql/dbdata:/var/lib/mysql
-        ports: 
+        ports:
             - "3321:3306"
-        networks: 
+        networks:
             - api
 
     # queue
@@ -53,23 +53,23 @@ services:
         image: especializati/laravel9-app
         restart: unless-stopped
         command: "php artisan queue:work"
-        volumes: 
+        volumes:
             - ./:/var/www
-        depends_on: 
+        depends_on:
             - redis
             - estudo_api
-        networks: 
+        networks:
             - api
 
     # redis
     redis:
         container_name: estudo_api_redis
         image: redis:latest
-        networks: 
+        networks:
             - api
         ports:
             - 6361:6379
 
-networks: 
+networks:
     api:
         driver: bridge
